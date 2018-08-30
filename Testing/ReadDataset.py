@@ -13,43 +13,35 @@ import csv
 import numpy as np
 import os
 import datetime
-warnings.filterwarnings("ignore", message="numpy.core.umath_tests")
 
 
-def read_csv(path_name, target=''):
+
+def read_csv(path_name, head=False, target=''):
     """
 read_csv legge il dataset specificato come parametro e separa header, dataset per il training e il target
     :param path_name: path da cui leggere il dataset
+    :param head: bool value che specifica se ritornare o meno l'header del dataset (False by default)
     :param target: specifica il livello di rischio su cui si vuole lavorare (uno tra NNC, NCD, n_caused_claim, cost_caused_claim)
     :return header: l'header del csv da cui sono stati rimossi i livelli di rischio
     :return dataset: il dataset del csv da cui sono stati rimossi i livelli di rischio
     :return target: il livello di rischio d'interesse
         """
-
-    #Lancia un eccezione se non si 3' selezionato nessun livello di rischio valido.
     if target!='NNC' and target!='NCD' and target!='n_caused_claim' and target!='cost_caused_claim':
         raise Exception('Please choose one of the following argument for \'target\':\nNNC\nNCD\nn_caused_claim\ncost_caused_claim')
 
-    #creo la cartella statistics_year dove verra' salvato il contenuto della cross validation
-    year = path_name[len(path_name)-35:len(path_name)-31]
-    folder_statistics = "./statistics_" + year + "/"
-    filename_statistics = folder_statistics + "statistics_" + year + "_" +target + ".txt"
-    if os.path.isdir(folder_statistics) == False:
-        os.mkdir(folder_statistics)
+    if os.path.isdir("./statistics") == False:
+        os.mkdir("./statistics")
 
-    #Indico nel file .txt generato dallo script data e ora in cui lo script e' stato lanciato
     now = datetime.datetime.now()
-    with open(filename_statistics, "a") as myfile:
+    with open("./statistics/statistics_" + target + ".txt", "a") as myfile:
         myfile.write("\nSCRIPT RUN "+ now.strftime("%Y-%m-%d %H:%M") + " \n\n")
         myfile.close()
 
-    #Leggo il dataset
     print('Read the dataset...')
     with open(path_name, 'r') as textfile:
         dataset = list(csv.reader(textfile))
         textfile.close()
     print('Parse the dataset...')
-
     #Rimuovo l'header
     header = dataset.pop(0)
 
@@ -70,8 +62,6 @@ read_csv legge il dataset specificato come parametro e separa header, dataset pe
             empty_index = index
         index = index+1
 
-    #Rimuovo i livelli di rischio e la chiave primaria.
-    #Rimuovo anche una colonna vuota presente a fine file (Errore nella discretizzazione?)
     to_delete = []
     to_delete.append(NPLZA_index)
     to_delete.append(NNC_index)
@@ -99,7 +89,6 @@ read_csv legge il dataset specificato come parametro e separa header, dataset pe
     dataset = np.array(dataset)
     dataset = np.delete(dataset, to_delete, 1)
 
-    #Elimino cio' che non mi interessa anche dall'header
     del header[empty_index]
     del header[cost_caused_claim_index]
     del header[n_caused_claim_index]
@@ -110,7 +99,10 @@ read_csv legge il dataset specificato come parametro e separa header, dataset pe
 
     print('Read operation done!')
 
-    return header, dataset, targets
+
+    if head == True:
+        return header, dataset, targets
+    return dataset, targets
 
 
 
