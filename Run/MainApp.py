@@ -7,15 +7,15 @@ warnings.filterwarnings("ignore", message="Duplicate key in file")
 warnings.filterwarnings("ignore", message="numpy.core.umath_tests")
 import SKLearn
 import ReadDataset
-import txt2xml
+import txt2xls
 
 ######## SETTARE QUI I PARAMETRI #########
 csv_path = 'dataset/itarea_compl2016_telematics_sent_clr_disc_y.csv' #path da dove leggere il csv di Reale Mutua
 n_fold=2 #Numero di fold utilizzati nella cross validation
 risk_levels = [ #Livelli di rischio da utilizzare
             #'n_caused_claim',
-            #'NCD',
-            'cost_caused_claim',
+            'NCD',
+            #'cost_caused_claim',
             #'NNC',
             ]
 ##########################################
@@ -35,7 +35,7 @@ for risk_level in risk_levels:
     dataset, target, dataset_encoder, target_encoder= SKLearn.LabelEncoder(dataset, target, header, risk_level=risk_level, dataset_name=csv_path, force_encoding=False )
 
     #Stampa (formato pdf) l'albero di decisione utilizzato nella classificazione del livello di rischio passato come parametro
-    SKLearn.tree_as_pdf(dataset=dataset, target=target, features=header, risk_level=risk_level, labels=dataset_encoder)
+    SKLearn.tree_as_pdf(dataset=dataset, target=target, features=header, risk_level=risk_level, labels=dataset_encoder, dataset_name=csv_path)
 
     #Effettua la cross validation basandosi sul dataset passato come parametro.
     #Nella cartella statistics rilascia le statistiche in formato .txt utilizzabili per l'analisi.
@@ -46,7 +46,8 @@ for risk_level in risk_levels:
                              n_fold=n_fold,
                              confusion_matrix=False,
                              statistics=False,
-                             risk_level=risk_level
+                             risk_level=risk_level,
+                             percentage=25
                              )
 #Trasforma i file txt rilasciati dalla cross validation in excel cosi' da esser letti piu' facilmente.
-txt2xml.txt2xml(path_name=csv_path)
+txt2xls.txt2xls(path_name=csv_path)

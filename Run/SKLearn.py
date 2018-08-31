@@ -387,10 +387,11 @@ Elabora l'albero di decisione come pdf e lo salva nel path specificato
     :param labels: etichette del dataset, utili per effettuare il reverse encoding
    """
     #Creo la cartella ./dtree che contiene gli alberi di decisione
-    path = 'dtree_' + risk_level + '.pdf'  # path dove verra' salvato l'albero di decisione
-    if os.path.isdir("./dtree") == False:
-        os.mkdir("./dtree")
-    path = "./dtree/" + path
+    year = dataset_name[len(dataset_name) - 35:len(dataset_name) - 31]
+    path = 'dtree_' + year + "_"+ risk_level + '.pdf'  # path dove verra' salvato l'albero di decisione
+    if os.path.isdir("./dtree_" + year) == False:
+        os.mkdir("./dtree_" + year)
+    path = "./dtree_" + year +"/" + path
 
 
     print("Save the decision tree as pdf file into " + path)

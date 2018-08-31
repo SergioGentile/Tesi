@@ -4,7 +4,7 @@ from os.path import isfile, join
 
 import os
 
-def txt2xml(path_name):
+def txt2xls(path_name):
 
     year = path_name[len(path_name) - 35:len(path_name) - 31]
     folder_statistics = "./statistics_" + year + "/"
