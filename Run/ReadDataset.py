@@ -49,7 +49,7 @@ read_csv legge il dataset specificato come parametro e separa header, dataset pe
         dataset = list(csv.reader(textfile))
         textfile.close()
     print('Parse the dataset...')
-
+    dataset = dataset[:40000]
     #Rimuovo l'header
     header = dataset.pop(0)
 

@@ -180,7 +180,7 @@ Di default utilizza la miglior configurazione possibile per ogni livello di risc
 
     if n_right==-1:
         if risk_level == 'cost_caused_claim':
-            n_right = 5
+            n_right = 4
         if risk_level == 'n_caused_claim':
             n_right = 4
         if risk_level == 'NCD':
