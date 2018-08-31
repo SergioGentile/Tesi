@@ -13,10 +13,10 @@ import txt2xls
 dataset_path = 'dataset/itarea_compl2016_telematics_sent_clr_disc_y.csv' #path da dove leggere il csv di Reale Mutua
 n_fold=2 #Numero di fold utilizzati nella cross validation
 risk_levels = [ #Livelli di rischio da utilizzare
-            #'n_caused_claim',
+            'n_caused_claim',
             'NCD',
-            #'cost_caused_claim',
-            #'NNC',
+            'cost_caused_claim',
+            'NNC',
             ]
 ##########################################
 

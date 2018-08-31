@@ -142,11 +142,11 @@ Essa contiene al suo interno 7 algoritmi che vengono combinati al fine di aument
 Di default utilizza la miglior configurazione possibile per ogni livello di rischio, ma è possibile utilizzare anche altre configurazioni.
     :param dataset: dataset da utilizzare per la cross validation
     :param target: vettore che contiene l'etichetta di classe per ogni entry
+	:param dataset_name: nome del dataset che viene utilizzato
     :param n_fold: specifica il numero di fold che verranno utilizzati dalla cross validation
     :param confusion_matrix: bool value che indica se visualizzare o meno a video la matrice di confusione ad ogni iterazione della cross validation
     :param statistics: bool value che indica se visualizzare o meno a video precision, recall, f1-score e support ad ogni iterazione della cross validation
     :param labels: etichette di classe del target
-    :param clf_name: nome del classificatore
     :param risk_level: livello di rischio per cui si sta effettuando la classificazione
     :param percentage: indica la percentuale di elementi ripetuti nell'oversampling rispetto alla lunghezza del dataset iniziale. Di default viene effettuato oversampling andando ad utilizzare un egual numero di entry per tutte le classi.
     :param n_of_clf: numero di classificatori che verranno utilizzato in modo combinato
