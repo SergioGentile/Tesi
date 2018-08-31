@@ -18,7 +18,7 @@ from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 import numpy as np
 
 ######## SETTARE QUI I PARAMETRI #########
-csv_path = 'dataset/itarea_compl2015_telematics_sent_clr_disc_y.csv' #path da dove leggere il csv
+dataset_path = 'dataset/itarea_compl2015_telematics_sent_clr_disc_y.csv' #path da dove leggere il csv
 cross_validation_iteration=5 #Numero di iterazioni della cross validation
 risk_levels = [
             'n_caused_claim',
@@ -131,12 +131,12 @@ for risk_level in risk_levels:
 
     #print(ReadDataset.read_csv.__doc__)
     #Leggo il CSV e separo header, dataset e target(il target e' il livello di rischio di interesse)
-    header, dataset, target = ReadDataset.read_csv(path_name=csv_path, head=True, target=risk_level)
+    header, dataset, target = ReadDataset.read_csv(path_name=dataset_path, head=True, target=risk_level)
 
 
     #Trasformo il dataset e il target, cosi da avere solamente valori numerici e poter effettuare la classificazione
     #print(SKLearn.LabelEncoder.__doc__)
-    dataset, target, dataset_encoder, target_encoder= SKLearn.LabelEncoder(dataset, target, header, risk_level=risk_level, dataset_name=csv_path, force_encoding=False )
+    dataset, target, dataset_encoder, target_encoder= SKLearn.LabelEncoder(dataset, target, header, risk_level=risk_level, dataset_name=dataset_path, force_encoding=False )
 
     #print(SKLearn.tree_as_pdf.__doc__)
     SKLearn.tree_as_pdf(dataset, target, features=header, path=decision_tree_path_pdf, labels=dataset_encoder)
