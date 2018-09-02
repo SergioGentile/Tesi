@@ -172,21 +172,72 @@ Di default utilizza la miglior configurazione possibile per ogni livello di risc
     models, clfs_name = get_clf_ordered(risk_level)
 
     #Se non è specificato niente, di default l'algoritmo utilizza la configurazione migliore.
-    if n_of_clf == -1:
-        n_of_clf=len(clfs_name)
+    if year == 2016:
+        if n_of_clf == -1:
+            if risk_level == 'cost_caused_claim':
+                n_of_clf = 4
+            if risk_level == 'n_caused_claim':
+                n_of_clf = 4
+            if risk_level == 'NCD':
+                n_of_clf = 4
+            if risk_level == 'NNC':
+                n_of_clf = 6
+
+        if n_right==-1:
+            if risk_level == 'cost_caused_claim':
+                n_right = 4
+            if risk_level == 'n_caused_claim':
+                n_right = 3
+            if risk_level == 'NCD':
+                n_right = 3
+            if risk_level == 'NNC':
+                n_right = 4
+
+        if percentage==-1:
+            if risk_level == 'cost_caused_claim':
+                percentage = 50
+            if risk_level == 'n_caused_claim':
+                percentage = -1
+            if risk_level == 'NCD':
+                percentage = -1
+            if risk_level == 'NNC':
+                percentage = 25
+    else:
+        if n_of_clf == -1:
+            if risk_level == 'cost_caused_claim':
+                n_of_clf = 6
+            if risk_level == 'n_caused_claim':
+                n_of_clf = 6
+            if risk_level == 'NCD':
+                n_of_clf = 2
+            if risk_level == 'NNC':
+                n_of_clf = 7
+
+        if n_right == -1:
+            if risk_level == 'cost_caused_claim':
+                n_right = 3
+            if risk_level == 'n_caused_claim':
+                n_right = 3
+            if risk_level == 'NCD':
+                n_right = 2
+            if risk_level == 'NNC':
+                n_right = 3
+
+        if percentage == -1:
+            if risk_level == 'cost_caused_claim':
+                percentage = 25
+            if risk_level == 'n_caused_claim':
+                percentage = 25
+            if risk_level == 'NCD':
+                percentage = 50
+            if risk_level == 'NNC':
+                percentage = 25
 
     models = models[:n_of_clf]
     clfs_name = clfs_name[:n_of_clf]
 
-    if n_right==-1:
-        if risk_level == 'cost_caused_claim':
-            n_right = 4
-        if risk_level == 'n_caused_claim':
-            n_right = 4
-        if risk_level == 'NCD':
-            n_right = 4
-        if risk_level == 'NNC':
-            n_right = 5
+
+
 
 
     print("\n##### CROSS VALIDATION RUN ########\n")
@@ -232,70 +283,42 @@ Di default utilizza la miglior configurazione possibile per ogni livello di risc
         if percentage == -1:
             X_train, y_train = ADASYN().fit_sample(X_train, y_train)
         else:
-            #E' possibile (settando il parametro percentage) avere un numero di elementi della classe meno popolosa pari ad una percentuale del dataset iniziale.
-            #In entrambi i casi gli elementi su cui verrà fatto oversampling sono scelti in modo randomico.
+            # E' possibile (settando il parametro percentage) avere un numero di elementi della classe meno popolosa pari ad una percentuale del dataset iniziale.
+            # In entrambi i casi gli elementi su cui verrà fatto oversampling sono scelti in modo randomico.
 
-            #Come si prende una percentuale di elementi in modo randomico?
-            index_B = []
-            target_max = max(target)
-            #Colleziono in index_B tutti gli indici della classe meno popolosa, su cui si vuol fare oversampling
-            for i in range(0, len(target)):
-                if target[i] == target_max:
-                    index_B.append(i)
-
-            #Conto quanti sono gli elementi della classe popolosa attualmente presenti nel training set
-            count_in_train = 0
-            for i in range(0, len(y_train)):
-                if y_train[i] == target_max:
-                    count_in_train = count_in_train + 1
-
-            #Calcolo cB_tot, ovvero in numero di elementi che dovrò avere per raggiungere la percentuale di oversampling specificata
-            cB_perc = float(percentage)
-            tot = float(len(target))
-            cB_tot = int((cB_perc / 100.0) * tot) - count_in_train
-
-            #Creo una lista di numeri random pari a cb_tot
-            r_index_B = list()
-            for i in range(0, cB_tot):
-                r_index_B.append(random.randint(0, len(index_B) - 1))
-
-            #Prendo dalla lista di indici un certo numero di indici (pari alla percentuale) in modo random, sfruttando il vettore r_index_B
-            r_indexes_B = []
-            for i in r_index_B:
-                r_indexes_B.append(index_B[i])
-
-            #Aggancio questi elementi al training set
-            X_train = list(X_train) + list(dataset[r_indexes_B])
-            y_train = list(y_train) + list(target[r_indexes_B])
-            """
+            # Come si prende una percentuale di elementi in modo randomico?
+            # Selezioni gli indici della classe meno popolosa
             index_B = []
             target_max = max(target)
             for i in range(0, len(y_train)):
                 if y_train[i] == target_max:
                     index_B.append(i)
 
+            # Conto quanti sono gli elementi della classe popolosa attualmente presenti nel training set
             count_in_train = 0
             for i in range(0, len(y_train)):
                 if y_train[i] == target_max:
                     count_in_train = count_in_train + 1
 
+            # Calcolo cB_tot, ovvero in numero di elementi che dovrò avere per raggiungere la percentuale di oversampling specificata
             cB_perc = float(percentage)
             tot = float(len(y_train))
             cB_tot = int((cB_perc / 100.0) * tot) - count_in_train
 
+            # Creo una lista di numeri random pari a cb_tot
             r_index_B = list()
             for i in range(0, cB_tot):
                 r_index_B.append(random.randint(0, len(index_B) - 1))
 
+            # Prendo dalla lista di indici un certo numero di indici (pari alla percentuale) in modo random, sfruttando il vettore r_index_B
             r_indexes_B = []
             for i in r_index_B:
                 r_indexes_B.append(index_B[i])
-
+            # Aggancio questi elementi al training set
             X_train = list(X_train) + list(X_train[r_indexes_B])
             y_train = list(y_train) + list(y_train[r_indexes_B])
-            """
-        k = k + 1
 
+        k = k + 1
 
         clfs_already_trained = []
         n_clf_used = 0

@@ -168,15 +168,22 @@ Di default utilizza la miglior configurazione possibile per ogni livello di risc
     models, clfs_name = get_clf_ordered(risk_level)
 
 
-    print("\n##### CROSS VALIDATION RUN ########\n")
+    print("\n##### CROSS VALIDATION RUN ########")
     if percentage == -1:
-        print("Run oversampling without percentage")
+        print("Run oversampling without percentage\n")
     else:
-        print("Run oversampling with percentage for the less populous class: " + str(percentage) + "%")
+        print("Run oversampling with percentage for the less populous class: " + str(percentage) + "%\n")
 
     start = time.time()
     y_test_tot = dict()
     predicted_tot = dict()
+
+    index_dict=0
+    for n_of_clf in range(2, len(clfs_name) + 1):
+        for n_right in range(2, n_of_clf + 1):
+            y_test_tot[index_dict] = np.array([])
+            predicted_tot[index_dict] = np.array([])
+            index_dict=index_dict+1
 
     # Utilizzo la StratifiedKFold per creare i fold
     kf = StratifiedKFold(n_splits=n_fold, random_state=None, shuffle=False).split(dataset, target)
@@ -197,9 +204,9 @@ Di default utilizza la miglior configurazione possibile per ogni livello di risc
             # In entrambi i casi gli elementi su cui verrà fatto oversampling sono scelti in modo randomico.
 
             # Come si prende una percentuale di elementi in modo randomico?
+            #Selezioni gli indici della classe meno popolosa
             index_B = []
-            target_max = max(target)
-            # Colleziono in index_B tutti gli indici della classe meno popolosa, su cui si vuol fare oversampling
+            target_max = max(y_train)
             for i in range(0, len(y_train)):
                 if y_train[i] == target_max:
                     index_B.append(i)
@@ -209,12 +216,12 @@ Di default utilizza la miglior configurazione possibile per ogni livello di risc
             for i in range(0, len(y_train)):
                 if y_train[i] == target_max:
                     count_in_train = count_in_train + 1
-
+            
             # Calcolo cB_tot, ovvero in numero di elementi che dovrò avere per raggiungere la percentuale di oversampling specificata
             cB_perc = float(percentage)
             tot = float(len(y_train))
             cB_tot = int((cB_perc / 100.0) * tot) - count_in_train
-
+            
             # Creo una lista di numeri random pari a cb_tot
             r_index_B = list()
             for i in range(0, cB_tot):
@@ -224,10 +231,10 @@ Di default utilizza la miglior configurazione possibile per ogni livello di risc
             r_indexes_B = []
             for i in r_index_B:
                 r_indexes_B.append(index_B[i])
-
-            # Aggancio questi elementi al training set
+             # Aggancio questi elementi al training set
             X_train = list(X_train) + list(X_train[r_indexes_B])
             y_train = list(y_train) + list(y_train[r_indexes_B])
+
 
         k = k + 1
         clfs_already_trained = []
@@ -254,9 +261,6 @@ Di default utilizza la miglior configurazione possibile per ogni livello di risc
         for n_of_clf in range(2, len(clfs_name)+1):
             predicted_clf = all_predicted_clf[:n_of_clf]
             for n_right in range(2, n_of_clf+1):
-                y_test_tot[index_dict] = np.array([])
-                predicted_tot[index_dict] = np.array([])
-
                 predicted = []
                 for i in range(0, len(predicted_clf[0])):
                     counter_right = 0
@@ -267,7 +271,6 @@ Di default utilizza la miglior configurazione possibile per ogni livello di risc
                         predicted.append(1)
                     else:
                         predicted.append(0)
-
                 y_test_tot[index_dict] = np.append(y_test_tot[index_dict], y_test)
                 predicted_tot[index_dict] = np.append(predicted_tot[index_dict], predicted)
                 index_dict = index_dict+1

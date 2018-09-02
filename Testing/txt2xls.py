@@ -5,7 +5,8 @@ from os.path import isfile, join
 import os
 
 def txt2xls(path_name):
-
+    c1 = 19
+    c2 = 20
     year = path_name[len(path_name) - 35:len(path_name) - 31]
     folder_statistics = "./statistics_" + year + "/"
     filename_xls = "statistics_" + year + ".xls"
@@ -25,7 +26,7 @@ def txt2xls(path_name):
 
     for filename in onlyfiles:
         path = folder_statistics+filename
-        header_exel = ["Num_Fold", "Perc_Oversampling","Right_index","Num_Classifiers","Accuracy","Prec_T0","Rec_T0","F1_T0","Prec_T1","Rec_T1","F1_T1", "Run_Time"]
+        header_exel = ["Num_Fold", "Perc_Oversampling","Right_index","Num_Classifiers","Accuracy","Prec_T0","Rec_T0","F1_T0","Prec_T1","Rec_T1","F1_T1","TP", "TN", "FP", "FN","Run_Time"]
         filename_split = filename.split(".txt")
         sheet_name = filename_split[0]
 
@@ -42,6 +43,8 @@ def txt2xls(path_name):
             sh.write(0, i, col, style=style)
             if col == "Run_Time":
                 sh.col(i).width = len(col)*500
+            elif col == "TP" or col=="TN" or col == "FP" or col == "FN":
+                sh.col(i).width = len(col) * 1000
             else:
                 sh.col(i).width = len(col) * 310
 
@@ -49,29 +52,38 @@ def txt2xls(path_name):
         pattern.pattern = xlwt.Pattern.SOLID_PATTERN
         pattern.pattern_fore_colour = xlwt.Style.colour_map['yellow']
         style.pattern = pattern
-        sh.write(3, 13, "Legenda", style)
-        sh.write(4, 13, "Parametro", style)
-        sh.write(4, 14, "Descrizione:",style)
-        sh.write(5, 13, "Num_Fold:")
-        sh.write(5, 14, "Indica il numero di fold utilizzati nella cross validation")
-        sh.write(6, 13, "Perc_Oversampling:")
-        sh.write(6, 14, "Indica la percentuale di elementi ripetuti nell'oversampling rispetto alla lunghezza del dataset iniziale")
-        sh.write(7, 13, "Right_index:")
-        sh.write(7, 14, "Indica il numero di classificatori minimo per classificare un entry con l'etichetta della classe meno popolosa")
-        sh.write(8, 13, "Num_Classifiers:")
-        sh.write(8, 14, "Indica il numero di classificatori minimo utilizzati")
-        sh.write(9, 13, "Accuracy:")
-        sh.write(9, 14, "Indica l'accuratezza")
-        sh.write(10, 13, "Prec_X:")
-        sh.write(10, 14, "Indica la precisione nella predizione del target X")
-        sh.write(11, 13, "Rec_X:")
-        sh.write(11, 14, "Indica il richiamo nella predizione del target X")
-        sh.write(12, 13, "F1_X:")
-        sh.write(12, 14, "Indica l'F1-Score nella predizione del target X")
-        sh.write(13, 13, "Run_Time:")
-        sh.write(13, 14, "Indica il momento in cui e' stato eseguito lo script per quella classificazione")
-        sh.col(13).width = len("Perc_Oversampling")*400
-        sh.col(14).width = 110*270
+
+        sh.write(3, c1, "Legenda", style)
+        sh.write(4, c1, "Parametro", style)
+        sh.write(4, c2, "Descrizione:",style)
+        sh.write(5, c1, "Num_Fold:")
+        sh.write(5, c2, "Indica il numero di fold utilizzati nella cross validation")
+        sh.write(6, c1, "Perc_Oversampling:")
+        sh.write(6, c2, "Indica la percentuale di elementi ripetuti nell'oversampling rispetto alla lunghezza del dataset iniziale")
+        sh.write(7, c1, "Right_index:")
+        sh.write(7, c2, "Indica il numero di classificatori minimo per classificare un entry con l'etichetta della classe meno popolosa")
+        sh.write(8, c1, "Num_Classifiers:")
+        sh.write(8, c2, "Indica il numero di classificatori minimo utilizzati")
+        sh.write(9, c1, "Accuracy:")
+        sh.write(9, c2, "Indica l'accuratezza")
+        sh.write(10, c1, "Prec_X:")
+        sh.write(10, c2, "Indica la precisione nella predizione del target X")
+        sh.write(11, c1, "Rec_X:")
+        sh.write(11, c2, "Indica il richiamo nella predizione del target X")
+        sh.write(12, c1, "F1_X:")
+        sh.write(12, c2, "Indica l'F1-Score nella predizione del target X")
+        sh.write(13, c1, "TP:")
+        sh.write(13, c2, "Veri Positivi")
+        sh.write(14, c1, "TN:")
+        sh.write(14, c2, "Veri Negativi")
+        sh.write(15, c1, "FP:")
+        sh.write(15, c2, "Falsi Positivi")
+        sh.write(16, c1, "FN:")
+        sh.write(16, c2, "Falsi Negativi")
+        sh.write(17, c1, "Run_Time:")
+        sh.write(17, c2, "Indica il momento in cui e' stato eseguito lo script per quella classificazione")
+        sh.col(c1).width = len("Perc_Oversampling")*400
+        sh.col(c2).width = 110*270
 
         with open(path) as f:
             max_f1=0
@@ -267,8 +279,12 @@ def txt2xls(path_name):
                     sh.write(index_excel, 8, s10)
                     sh.write(index_excel, 9, s11)
                     sh.write(index_excel, 10, f12)
-                    sh.write(index_excel, 11, run_time)
-                    if float(f12)>float(max_f1):
+                    sh.write(index_excel, 11, x00)
+                    sh.write(index_excel, 12, x11)
+                    sh.write(index_excel, 13, x01)
+                    sh.write(index_excel, 14, x10)
+                    sh.write(index_excel, 15, run_time)
+                    if float(f12)>=float(max_f1):
                         max_f1=float(f12)
                         max_perc=percentage_p
                         max_n_right=index_right
@@ -277,10 +293,11 @@ def txt2xls(path_name):
 
 
         f.close()
-        sh.write(16, 13, "Risultato migliore", style=style)
-        sh.write(17, 13, "Riga " + str(max_row)+ ". Si ha un F1-Score="+str(int(max_f1*100))+"%.")
-        sh.write(18, 13, "Prametri utilizzati: n_right="+str(max_n_right)+", n_clf="+str(max_n_clf)+" e percentage=" + str(max_perc))
+        sh.write(20, c1, "Risultato migliore", style=style)
+        sh.write(21, c1, "Riga " + str(max_row)+ ". Si ha un F1-Score="+str(int(max_f1*100))+"%.")
+        sh.write(22, c1, "Prametri utilizzati: n_right="+str(max_n_right)+", n_clf="+str(max_n_clf)+" e percentage=" + str(max_perc))
+        sh.write(23, c1, "Entry della classe A: " + str(x00 + x01))
+        sh.write(24, c1, "Entry della classe B: " + str(x10 + x11))
 
     if len(onlyfiles)!= 0:
         book.save(filename_statistics)
-
